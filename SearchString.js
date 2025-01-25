@@ -1,35 +1,39 @@
 //Load a book from disk
 function loadBook(filename, displayName) {
+    console.log("Loading book:", filename);
     let currentBook = "";
     let url = "books/" + filename;
 
-    //reset our UI
+    // Reset the UI
     document.getElementById("fileName").innerHTML = displayName;
     document.getElementById("searchstat").innerHTML = "";
-    document.getElementById("keyword").value = "";
+    document.getElementById("fileContent").innerHTML = "Loading...";
 
-    //create a server a request to load our book
-    var xhr = new XMLHttpRequest();
+    // Create an XMLHttpRequest to fetch the book
+    let xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.send();
 
     xhr.onreadystatechange = function () {
+        console.log("Ready state:", xhr.readyState, "Status:", xhr.status);
         if (xhr.readyState == 4 && xhr.status == 200) {
             currentBook = xhr.responseText;
 
-            getDocStats(currentBook);
-
-            //remove line breaks and carriage returns and replace with a <br>
+            // Remove line breaks and replace them with <br> for HTML display
             currentBook = currentBook.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
+            // Display the book content in the fileContent element
             document.getElementById("fileContent").innerHTML = currentBook;
 
+            // Scroll to the top of the content
             var elmnt = document.getElementById("fileContent");
             elmnt.scrollTop = 0;
-
+        } else if  (xhr.readyState == 4) {
+            document.getElementById("fileContent").innerHTML = "Error loading book. Please try again.";
         }
     };
 }
+
 
 //get the stats for the book
 function getDocStats(fileContent) {
